@@ -17,6 +17,18 @@ from src.indexing import *
 def main():
     load_dotenv()
 
+    run_timestamp = datetime.now().strftime("%Y%m%d_%H%M%S_%f")
+    run_dir = Path("logs") / run_timestamp
+    run_dir.mkdir(parents=True, exist_ok=False)
+
+    run_logger = logging.getLogger(f"rag_run.{run_timestamp}")
+    run_logger.setLevel(logging.INFO)
+    run_logger.propagate = False
+    file_handler = logging.FileHandler(run_dir / "run.log", encoding="utf-8")
+    file_handler.setFormatter(logging.Formatter("%(asctime)s %(levelname)s %(message)s"))
+    run_logger.addHandler(file_handler)
+    run_logger.info("Run started")
+
 
     k = int(os.getenv('RETRIEVAL_K'))
     if k is None:
