@@ -53,30 +53,10 @@ def main():
 
     retriever = create_retriever(docs, embedding, k=k)
 
-    company_name = "Nestle"
-    role_title = "Graduate 2027 - Digital Development"
-    job_description = r"""
-Shape the future through scientific breakthroughs and innovation.
-
-As a Digital Food Safety Early Warning Associate Specialist at Nestlé Research, your mission is to enable the proactive detection of potential food safety issues by strengthening the evaluation of external scientific signals and the evolution of digital early warning systems.. You’ll make a difference by collaborating closely with food safety, quality, research, technology, and external data partners. This is your opportunity to turn ideas into sustainable and innovative solutions for people, pets, and the planet.
-
-How you’ll make an impact as a Digital Food Safety Early Warning Associate Specialist
-
-Strengthening proactive food safety early warning by scouting and evaluating emerging issues across priority contaminant areas.
-Identifying and assessing internal and external data sources that improve the detection, prioritization, and scientific evaluation of early signals.
-Contribute to the evaluation and deployment of digital technologies that enhance data-driven detection of emerging food safety topics.
-Testing prototypes that help transform early warning processes into scalable digital solutions.
-Participate in scientific collaborations that connect research, technology, and business needs to protect consumers.
-Delivering project activities with focus, rigor, and follow-through to support impactful food safety decisions.
-What will make you successful
-
-Bringing basic chemistry knowledge and a good understanding of chemical contaminants, including how they can emerge, evolve, and impact food safety.
-Applying knowledge of food safety and quality processes in the context of supply chains, incident occurrence, issue evolution, and potential consumer impact.
-Using data and digital technologies in a food safety context, ideally to support data-driven risk assessment, root-cause analysis, and early warning decision-making.
-Collaborating effectively with diverse internal and external partners, while translating research into practical business impact.
-Communicating fluently in English; working proficiency in French is a plus.
-Bringing collaboration, fresh thinking, bold questions, respect, and a positive, wellbeing-oriented mindset.
-    """,
+    company_name = input("Enter the target company name: ")
+    role_title = input("Enter the target role title: ")
+    run_logger.info("Target company: %s; role: %s", company_name, role_title)
+    job_description = input("Enter the job description: ")
 
     retrieved_context = retriever.invoke(
         f"{job_description}\n\nFind the most relevant candidate experiences based on this job description, "
