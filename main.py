@@ -1,3 +1,6 @@
+import logging
+import os
+from datetime import datetime
 from pathlib import Path
 
 from dotenv import load_dotenv
@@ -10,10 +13,10 @@ from generation.agents.agent import create_agent
 from generation.agents.validation_agent import create_company_claim_validator
 from generation.tools.search import search_content
 from src.indexing import *
-import os
 
 def main():
     load_dotenv()
+
 
     k = int(os.getenv('RETRIEVAL_K'))
     if k is None:
@@ -34,11 +37,12 @@ def main():
     docs = load_context_docs("data/")
     docs = split_docs(docs)
     print(docs)
+    run_logger.info("Loaded and split %d candidate document chunks", len(docs))
 
     retriever = create_retriever(docs, embedding, k=k)
 
     company_name = "Nestle"
-    role_title = "Digital Food Safety Early Warning Associate Specialist"
+    role_title = "Graduate 2027 - Digital Development"
     job_description = r"""
 Shape the future through scientific breakthroughs and innovation.
 
@@ -66,14 +70,15 @@ Bringing collaboration, fresh thinking, bold questions, respect, and a positive,
         f"{job_description}\n\nFind the most relevant candidate experiences based on this job description, "
         "skills, projects, and achievements"
     )
+    run_logger.info("Retrieved %d candidate context chunks", len(retrieved_context))
 
     candidate_evidence = "\n".join([
         f"- {doc.page_content}..."
         for doc in (retrieved_context if isinstance(retrieved_context, list) else [retrieved_context])
     ])
 
-    with open(f"output/RAG_context.txt", "w") as f:
-        f.write(candidate_evidence)
+    (run_dir / "RAG_context.txt").write_text(candidate_evidence, encoding="utf-8")
+    run_logger.info("Saved retrieved context")
 
     # The below tools cannot be created because the current architecture loads context immediately into context window, instead of allowing the agent to delegate and control chunking retrieval. This is a limitation of the current implementation and will be addressed in future iterations.
     # retriever_tool = retrieve_content
@@ -116,8 +121,10 @@ Bringing collaboration, fresh thinking, bold questions, respect, and a positive,
         raise RuntimeError("The cover-letter agent returned no text.")
 
     print(cover_letter)
-    with open(f"output/{company_name.replace(' ', '_')}.txt", "w") as f:
-        f.write(cover_letter)
+    (run_dir / f"{company_name.replace(' ', '_')}.txt").write_text(
+        cover_letter, encoding="utf-8"
+    )
+    run_logger.info("Saved generated cover letter")
 
     validator = create_company_claim_validator()
     validation_prompt = PROMPTS["company_claim_validation.txt"].format(
@@ -139,8 +146,11 @@ Bringing collaboration, fresh thinking, bold questions, respect, and a positive,
     if validation_report is None:
         raise RuntimeError("The company-claim validator returned no report.")
 
-    with open("output/company_claim_validation.txt", "w") as f:
-        f.write(validation_report)
+    (run_dir / "company_claim_validation.txt").write_text(
+        validation_report, encoding="utf-8"
+    )
+    run_logger.info("Saved company claim validation report")
+    run_logger.info("Run completed successfully")
 
 
 

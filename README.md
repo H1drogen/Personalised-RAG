@@ -15,7 +15,9 @@ Documents are split by chunking on paragraphs.
   - retrieved information
   - internet research
 - Fact-checks company-specific claims in the generated letter and writes a validation
-  report to `output/company_claim_validation.txt`
+  report alongside the other run artifacts
+- Archives each run in a unique timestamped directory under `logs/`, including the
+  retrieved context, generated letter, validation report, and `run.log`
 
 ## Chunking strategy
 Documents are split on paragraph boundaries first, then large chunks are further split into smaller overlapping pieces.
@@ -46,4 +48,4 @@ LANGSMITH_TRACING=
 1. Input your reference files into the data directory
 2. Adjust the human and system prompts in the prompts directory
 3. Run main.py
-4. Find the AI output in a newly created output folder
+4. Find the AI output and validation report in the newest timestamped folder under `logs/`
